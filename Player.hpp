@@ -1,14 +1,16 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "Main.hpp"
 #include "Entity.hpp"
 
 class Player : public Entity {
+private:
+    float playerSpeed;
+
 public:
     // Constructeur et destructeur
-    Player();
-    ~Player();
+    Player(Sprite playerSprite, float playerSpeed);
+    virtual ~Player();
 
     // Getters pour la position du sprite
     float getX() const;
@@ -23,8 +25,6 @@ public:
     void update(float deltaTime) override;
     void draw(RenderWindow& window) override;
 
-private:
-    // Ajout de variables spécifiques à Player, si nécessaire
+    void handleInput();
 };
-
 #endif // PLAYER_HPP
