@@ -1,7 +1,4 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
-using namespace std;
-using namespace sf;
+#include "Main.hpp"
 
 int main() {
 	
