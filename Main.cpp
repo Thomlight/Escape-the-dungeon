@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "Chaser.hpp"
+#include "Patroller.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
@@ -37,8 +38,13 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du joueur");
     }
 
-    Texture EnemyTexture;
-    if (!EnemyTexture.loadFromFile("Mickael_Jackson_Zombie.png")) {
+    Texture ChaserTexture;
+    if (!ChaserTexture.loadFromFile("Mickael_Jackson_Zombie.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du zombie");
+    }
+
+    Texture PatrollerTexture;
+    if (!PatrollerTexture.loadFromFile("Disco_Zombie.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
@@ -55,10 +61,20 @@ int main() {
     Player player(playerTexture, Vector2f(300,200), 10.f);
     
 
-    Sprite EnemySprite;
-    EnemySprite.setTexture(EnemyTexture);
-    Chaser chaser(EnemyTexture, Vector2f(600, 400), 100.f);
+    Sprite ChaserSprite;
+    ChaserSprite.setTexture(ChaserTexture);
+    Chaser chaser(ChaserTexture, Vector2f(600, 400), 100.f);
     chaser.setTarget(playerSprite.getPosition());
+
+    Sprite PatrollerSprite;
+    PatrollerSprite.setTexture(PatrollerTexture);
+    vector<sf::Vector2f> path = {
+    {100.f, 100.f},
+    {200.f, 100.f},
+    {200.f, 200.f},
+    {100.f, 200.f}
+    };
+    Patroller patroller(PatrollerTexture, path[0], 100.f, path );
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -96,8 +112,11 @@ int main() {
         player.handleInput();
         player.update(DeltaTime);
         chaser.update(DeltaTime);
+        patroller.update(DeltaTime);
+
         player.draw(window);
         chaser.draw(window);
+        patroller.draw(window);
         window.display();
     }
 
