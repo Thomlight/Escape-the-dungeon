@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "Enemy.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
@@ -35,6 +36,11 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du joueur");
     }
 
+    Texture EnemyTexture;
+    if (!EnemyTexture.loadFromFile("Mickael_Jackson_Zombie.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du zombie");
+    }
+
     // Création des sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
@@ -45,7 +51,12 @@ int main() {
 
     Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
-    Player player(playerTexture, Vector2f(300,200), 20.f);
+    Player player(playerTexture, Vector2f(300,200), 10.f);
+    
+
+    Sprite EnemySprite;
+    EnemySprite.setTexture(EnemyTexture);
+    Enemy enemy(EnemyTexture, Vector2f(600, 400), 5.f);
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -81,7 +92,9 @@ int main() {
 
         player.handleInput();
         player.update(DeltaTime);
+        enemy.update(DeltaTime);
         player.draw(window);
+        enemy.draw(window);
         window.display();
     }
 
