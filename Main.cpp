@@ -10,6 +10,15 @@ using namespace sf;
 
 float DeltaTime;
 
+void checkCollisions(Sprite sprite1, Sprite sprite2) {
+    FloatRect bounds1 = sprite1.getGlobalBounds();
+    FloatRect bounds2 = sprite2.getGlobalBounds();
+    if (bounds1.intersects(bounds2)) {
+        cout << "Collision detected!" << endl;
+        cout << "not gud !" << endl;
+    }
+}
+
 int main() {
 
     Clock clock;
@@ -39,7 +48,7 @@ int main() {
     }
 
     Texture ChaserTexture;
-    if (!ChaserTexture.loadFromFile("Mickael_Jackson_Zombie.png")) {
+    if (!ChaserTexture.loadFromFile("Michael_Jackson_Zombie.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
@@ -59,12 +68,13 @@ int main() {
     Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
     Player player(playerTexture, Vector2f(300,200), 10.f);
-    
+    player.getSprite().setScale(0.5f, 0.5f);
 
     Sprite ChaserSprite;
     ChaserSprite.setTexture(ChaserTexture);
     Chaser chaser(ChaserTexture, Vector2f(600, 400), 100.f);
     chaser.setTarget(playerSprite.getPosition());
+    chaser.getSprite().setScale(1.0f, 1.0f);
 
     Sprite PatrollerSprite;
     PatrollerSprite.setTexture(PatrollerTexture);
@@ -75,6 +85,7 @@ int main() {
     {100.f, 200.f}
     };
     Patroller patroller(PatrollerTexture, path[0], 100.f, path );
+    patroller.getSprite().setScale(0.5f, 0.5f);
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -113,6 +124,9 @@ int main() {
         player.update(DeltaTime);
         chaser.update(DeltaTime);
         patroller.update(DeltaTime);
+
+        checkCollisions(player.getSprite(),chaser.getSprite());
+        checkCollisions(player.getSprite(), patroller.getSprite());
 
         player.draw(window);
         chaser.draw(window);

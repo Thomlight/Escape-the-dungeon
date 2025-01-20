@@ -12,7 +12,7 @@ protected:
 public:
     Entity(const Texture& texture);
 
-    const Sprite& getSprite() const; // Doit retourner une référence constante
+    Sprite& getSprite(); // Doit retourner une référence constante
 
     void setTexture(const sf::Texture& texture);
 

@@ -4,7 +4,7 @@ Entity::Entity(const Texture& texture) {
     sprite.setTexture(texture);
 }
 
-const Sprite& Entity::getSprite() const {
+Sprite& Entity::getSprite() {
     return sprite;
 }
 

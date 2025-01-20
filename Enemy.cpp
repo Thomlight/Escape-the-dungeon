@@ -30,3 +30,4 @@ void Enemy::setPosition(const Vector2f& newPosition) {
 void Enemy::setVelocity(const Vector2f& newVelocity) {
     velocity = newVelocity;
 }
+
