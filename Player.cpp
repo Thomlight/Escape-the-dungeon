@@ -7,16 +7,16 @@ Player::Player(const Texture& texture, const Vector2f& startPosition, float init
 
 void Player::handleInput() {
 
-    if (sf::Keyboard::isKeyPressed(Keyboard::Z) && position.y > -25 && position.y > -25) {
+    if (sf::Keyboard::isKeyPressed(Keyboard::Z)) {
         position.y = position.y - speed;
     }
-    if (sf::Keyboard::isKeyPressed(Keyboard::S) && position.y < 800) {
+    if (sf::Keyboard::isKeyPressed(Keyboard::S)) {
         position.y = position.y + speed;
     }
-    if (sf::Keyboard::isKeyPressed(Keyboard::Q) && position.x > 0) {
+    if (sf::Keyboard::isKeyPressed(Keyboard::Q)) {
         position.x = position.x - speed;
     }
-    if (sf::Keyboard::isKeyPressed(Keyboard::D) && position.x < 1240) {
+    if (sf::Keyboard::isKeyPressed(Keyboard::D)) {
         position.x = position.x + speed;
     }
 }
