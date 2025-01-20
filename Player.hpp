@@ -22,7 +22,7 @@ public:
     void draw(RenderWindow& window) const override;
 
     const Vector2f& getVelocity() const;
-    const Vector2f& getPosition() const;
+    const Vector2f& getPosition();
 
     void setPosition(const Vector2f& newPosition);
     void setVelocity(const Vector2f& newVelocity);

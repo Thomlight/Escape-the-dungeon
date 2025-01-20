@@ -30,7 +30,7 @@ void Player::draw(sf::RenderWindow& window) const {
     window.draw(sprite);
 }
 
-const sf::Vector2f& Player::getPosition() const {
+const sf::Vector2f& Player::getPosition()  {
     return position;
 }
 

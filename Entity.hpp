@@ -18,6 +18,7 @@ public:
 
     virtual void update(float deltaTime) = 0;
     virtual void draw(RenderWindow& window) const = 0;
+  
 
     virtual ~Entity() = default; // Destructeur virtuel
 };

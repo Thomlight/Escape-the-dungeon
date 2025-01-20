@@ -7,11 +7,10 @@
 
 
 class Enemy : public Entity {
-private:
+protected:
     Vector2f position; // Position actuelle de l'ennemi
     Vector2f velocity; // Vitesse actuelle de l'ennemi
     float speed; // Vitesse de déplacement
-    
 
 public:
     Enemy(const Texture& texture, const Vector2f& startPosition, float initialSpeed);

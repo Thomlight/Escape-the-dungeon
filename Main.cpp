@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "Chaser.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
@@ -14,7 +15,7 @@ int main() {
     // Création de la fenêtre
     RenderWindow window(VideoMode(1440, 1000), "Escape the Dungeon");
     Event event;
-
+   
     // Chargement des textures
     Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("Title_Background.png")) {
@@ -56,7 +57,8 @@ int main() {
 
     Sprite EnemySprite;
     EnemySprite.setTexture(EnemyTexture);
-    Enemy enemy(EnemyTexture, Vector2f(600, 400), 5.f);
+    Chaser chaser(EnemyTexture, Vector2f(600, 400), 100.f);
+    chaser.setTarget(playerSprite.getPosition());
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -83,6 +85,7 @@ int main() {
         }
         window.setFramerateLimit(60);
         DeltaTime = clock.restart().asSeconds();
+        chaser.setTarget(player.getPosition());
         // Affichage
         window.clear();
         //window.draw(backgroundSprite); // Dessin du fond d'écran
@@ -92,9 +95,9 @@ int main() {
 
         player.handleInput();
         player.update(DeltaTime);
-        enemy.update(DeltaTime);
+        chaser.update(DeltaTime);
         player.draw(window);
-        enemy.draw(window);
+        chaser.draw(window);
         window.display();
     }
 
