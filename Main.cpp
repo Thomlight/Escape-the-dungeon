@@ -5,7 +5,7 @@
 using namespace std;
 using namespace sf;
 
-float Deltatime;
+float DeltaTime;
 
 int main() {
 
@@ -32,7 +32,7 @@ int main() {
 
     Texture playerTexture;
     if (!playerTexture.loadFromFile("Crazy_Dave.png")) {
-        throw runtime_error("Erreur : Impossible de charger la texture de dave !");
+        throw runtime_error("Erreur : Impossible de charger la texture du joueur");
     }
 
     // Création des sprites
@@ -45,7 +45,7 @@ int main() {
 
     Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
-    Player Dave(playerSprite,1);
+    Player player(playerTexture, Vector2f(300,200), 20.f);
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -66,40 +66,22 @@ int main() {
             if (event.type == Event::Closed) {
                 window.close();
             }
-
-            // Gestion des clics sur le bouton
-            //if (!startPressed && event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-                //Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
-               // if (startButtonSprite.getGlobalBounds().contains(mousePos)) {
-                    // Action du bouton : changement du fond
-                   // startPressed = true;
-                   // cout << "Bouton Start clique ! Fond change." << endl;
-
-                    // Mise à jour du fond d'écran
-                   // backgroundSprite.setTexture(newBackgroundTexture);
-
-                    // Mise à l'échelle pour le nouveau fond
-                    //Vector2u newTextureSize = newBackgroundTexture.getSize();
-                    //scaleX = static_cast<float>(windowSize.x) / newTextureSize.x;
-                    //scaleY = static_cast<float>(windowSize.y) / newTextureSize.y;
-                    //backgroundSprite.setScale(scaleX, scaleY);
-
-                    // Masquer et désactiver le bouton
-                    //startButtonSprite.setColor(Color::Transparent);
-                //}
-            //}
-
-            Dave.handleInput();
+           
+      
 
         }
-
+        window.setFramerateLimit(60);
+        DeltaTime = clock.restart().asSeconds();
         // Affichage
         window.clear();
         //window.draw(backgroundSprite); // Dessin du fond d'écran
         //if (!startPressed) {
            // window.draw(startButtonSprite); // Dessin du bouton uniquement si non pressé
         //}
-        window.draw(playerSprite);
+
+        player.handleInput();
+        player.update(DeltaTime);
+        player.draw(window);
         window.display();
     }
 

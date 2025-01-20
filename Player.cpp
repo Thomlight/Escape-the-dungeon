@@ -1,64 +1,48 @@
 #include "Player.hpp"
 
-// Constructeur
-Player::Player(Sprite playerSprite, float playerSpeed) {
-    // Initialisation spécifique au joueur, si nécessaire
-    sprite = playerSprite;
-}
-
-// Destructeur
-Player::~Player() {
-    // Nettoyage, si nécessaire
-}
-
-// Getters
-float Player::getX() const {
-    return sprite.getPosition().x;
-}
-
-float Player::getY() const {
-    return sprite.getPosition().y;
-}
-
-Vector2f Player::getPosition() const {
-    return sprite.getPosition();
-}
-
-// Setters
-void Player::setPosition(float x, float y) {
-    sprite.setPosition(x, y);
-}
-
-void Player::setPosition(const Vector2f& position) {
+Player::Player(const Texture& texture, const Vector2f& startPosition, float initialSpeed)
+    : Entity(texture), position(startPosition), speed(initialSpeed) {
     sprite.setPosition(position);
 }
 
-// Implémentation de la méthode update
-void Player::update(float deltaTime) {}
+void Player::handleInput() {
 
-// Implémentation de la méthode draw
-void Player::draw(RenderWindow& window) {
+    if (sf::Keyboard::isKeyPressed(Keyboard::Z) && position.y > -25 && position.y > -25) {
+        position.y = position.y - speed;
+    }
+    if (sf::Keyboard::isKeyPressed(Keyboard::S) && position.y < 800) {
+        position.y = position.y + speed;
+    }
+    if (sf::Keyboard::isKeyPressed(Keyboard::Q) && position.x > 0) {
+        position.x = position.x - speed;
+    }
+    if (sf::Keyboard::isKeyPressed(Keyboard::D) && position.x < 1240) {
+        position.x = position.x + speed;
+    }
+}
+
+void Player::update(float deltaTime) {
+    position += velocity * deltaTime;
+    sprite.setPosition(position);
+}
+
+void Player::draw(sf::RenderWindow& window) const {
     window.draw(sprite);
 }
 
-void Player::handleInput() {
-    // Vecteur pour accumuler le déplacement
-    sf::Vector2f movement(0.f, 0.f);
+const sf::Vector2f& Player::getPosition() const {
+    return position;
+}
 
-    // Gestion des entrées clavier
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-        movement.y -= playerSpeed; // Déplacement vers le haut
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        movement.y += playerSpeed; // Déplacement vers le bas
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-        movement.x -= playerSpeed; // Déplacement vers la gauche
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        movement.x += playerSpeed; // Déplacement vers la droite
-    }
+const sf::Vector2f& Player::getVelocity() const {
+    return velocity;
+}
 
-    // Appliquer le déplacement au sprite du joueur
-    sprite.move(movement);
+void Player::setPosition(const Vector2f& newPosition) {
+    position = newPosition;
+    sprite.setPosition(position);
+}
+
+void Player::setVelocity(const Vector2f& newVelocity) {
+    velocity = newVelocity;
 }

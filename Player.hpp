@@ -1,30 +1,33 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "Entity.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
 
 class Player : public Entity {
 private:
-    float playerSpeed;
+    Vector2f position; // Position actuelle du joueur
+    Vector2f velocity; // Vitesse actuelle du joueur
+    float speed; // Vitesse de déplacement
 
 public:
-    // Constructeur et destructeur
-    Player(Sprite playerSprite, float playerSpeed);
-    virtual ~Player();
+    Player(const Texture& texture, const Vector2f& startPosition, float initialSpeed);
 
-    // Getters pour la position du sprite
-    float getX() const;
-    float getY() const;
-    Vector2f getPosition() const;
 
-    // Setters pour la position du sprite
-    void setPosition(float x, float y);
-    void setPosition(const Vector2f& position);
-
-    // Méthodes héritées de Entity
     void update(float deltaTime) override;
-    void draw(RenderWindow& window) override;
+
+
+    void draw(RenderWindow& window) const override;
+
+    const Vector2f& getVelocity() const;
+    const Vector2f& getPosition() const;
+
+    void setPosition(const Vector2f& newPosition);
+    void setVelocity(const Vector2f& newVelocity);
 
     void handleInput();
 };
-#endif // PLAYER_HPP
+
+#endif // PLAYER_H
