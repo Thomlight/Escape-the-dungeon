@@ -1,10 +1,10 @@
-#include "Player.hpp"
-#include "Enemy.hpp"
-#include "Chaser.hpp"
-#include "Patroller.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include "Player.hpp"
+#include "Chaser.hpp"
+#include "Patroller.hpp"
+#include "Potion.hpp"
 using namespace std;
 using namespace sf;
 
@@ -57,6 +57,11 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
+    Texture PotionTexture;
+    if (!PotionTexture.loadFromFile("Potion.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du zombie");
+    }
+
     // Création des sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
@@ -78,14 +83,13 @@ int main() {
 
     Sprite PatrollerSprite;
     PatrollerSprite.setTexture(PatrollerTexture);
-    vector<sf::Vector2f> path = {
-    {100.f, 100.f},
-    {200.f, 100.f},
-    {200.f, 200.f},
-    {100.f, 200.f}
-    };
+    vector<sf::Vector2f> path = {{100.f, 100.f},{200.f, 100.f},{200.f, 200.f},{100.f, 200.f}};
     Patroller patroller(PatrollerTexture, path[0], 100.f, path );
     patroller.getSprite().setScale(0.5f, 0.5f);
+
+    Sprite PotionSprite;
+    PotionSprite.setTexture(PotionTexture);
+    Potion potion(PotionTexture, Vector2f(1000, 500), &player, true);
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -106,9 +110,6 @@ int main() {
             if (event.type == Event::Closed) {
                 window.close();
             }
-           
-      
-
         }
         window.setFramerateLimit(60);
         DeltaTime = clock.restart().asSeconds();
@@ -123,14 +124,18 @@ int main() {
         player.handleInput();
         player.update(DeltaTime);
         chaser.update(DeltaTime);
-        patroller.update(DeltaTime);
+        patroller.updateP(DeltaTime);
+        potion.update(DeltaTime);
 
-        checkCollisions(player.getSprite(),chaser.getSprite());
-        checkCollisions(player.getSprite(), patroller.getSprite());
+        potion.interact(player);
+        //checkCollisions(player.getSprite(),chaser.getSprite());
+        //checkCollisions(player.getSprite(), patroller.getSprite());
+        
 
         player.draw(window);
         chaser.draw(window);
         patroller.draw(window);
+        potion.draw(window);
         window.display();
     }
 

@@ -7,7 +7,7 @@ Patroller::Patroller(const Texture& texture, const Vector2f& startPosition, floa
     }
 }
 
-void Patroller::update(float deltaTime) {
+void Patroller::updateP(float deltaTime) {
     if (waypoints.empty()) return; // No waypoints, no movement
 
     Vector2f target = waypoints[currentWaypointIndex];

@@ -6,14 +6,14 @@
 
 class Chaser : public Enemy {
 private:
-    const sf::Vector2f* playerPosition; // Pointer to the player's position
+    const Vector2f* playerPosition; // Pointer to the player's position
 
 public:
-    Chaser(const sf::Texture& texture, const sf::Vector2f& startPosition, float initialSpeed);
+    Chaser(const Texture& texture, const Vector2f& startPosition, float initialSpeed);
 
     void update(float deltaTime) override;
 
-    void setTarget(const sf::Vector2f& playerPos);
+    void setTarget(const Vector2f& playerPos);
 };
 
 #endif // CHASER_H

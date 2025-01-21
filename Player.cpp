@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include <iostream>
 
 Player::Player(const Texture& texture, const Vector2f& startPosition, float initialSpeed)
     : Entity(texture), position(startPosition), speed(initialSpeed) {
@@ -45,4 +46,9 @@ void Player::setPosition(const Vector2f& newPosition) {
 
 void Player::setVelocity(const Vector2f& newVelocity) {
     velocity = newVelocity;
+}
+
+void Player::speedUp() {
+    speed += 5;
+    cout << "player speed up" << endl;
 }

@@ -1,33 +1,27 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
-#include "Entity.hpp"
+// Player.hpp
+#pragma once
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include "Entity.hpp"
 
+using namespace sf;
 
 class Player : public Entity {
-private:
-    Vector2f position; // Position actuelle du joueur
-    Vector2f velocity; // Vitesse actuelle du joueur
-    float speed; // Vitesse de déplacement
-
+    private:
+    Vector2f position;
+    Vector2f velocity;
+    float speed;
+    int nbKeys = 0; // Ajout d'une variable pour suivre le nombre de clés
 public:
     Player(const Texture& texture, const Vector2f& startPosition, float initialSpeed);
 
+    void handleInput();
+    void update(float deltaTime);
+    void draw(RenderWindow& window) const;
 
-    void update(float deltaTime) override;
-
-
-    void draw(RenderWindow& window) const override;
-
-    const Vector2f& getVelocity() const;
     const Vector2f& getPosition();
-
+    const Vector2f& getVelocity() const;
     void setPosition(const Vector2f& newPosition);
     void setVelocity(const Vector2f& newVelocity);
 
-    void handleInput();
+    void speedUp();
 };
-
-#endif // PLAYER_H

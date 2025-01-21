@@ -13,7 +13,7 @@ private:
 public:
     Patroller(const Texture& texture, const Vector2f& startPosition, float speed, const vector<Vector2f>& waypoints);
 
-    void update(float deltaTime) override;
+    void updateP(float deltaTime);
 
     void setWaypoints(const vector<Vector2f>& newWaypoints);
     const vector<Vector2f>& getWaypoints() const;

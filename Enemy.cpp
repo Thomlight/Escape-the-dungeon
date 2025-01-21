@@ -10,15 +10,15 @@ void Enemy::update(float deltaTime) {
     sprite.setPosition(position);
 }
 
-void Enemy::draw(sf::RenderWindow& window) const {
+void Enemy::draw(RenderWindow& window) const {
     window.draw(sprite);
 }
 
-const sf::Vector2f& Enemy::getPosition() const {
+const Vector2f& Enemy::getPosition() const {
     return position;
 }
 
-const sf::Vector2f& Enemy::getVelocity() const {
+const Vector2f& Enemy::getVelocity() const {
     return velocity;
 }
 

@@ -14,7 +14,7 @@ public:
 
     Sprite& getSprite(); // Doit retourner une référence constante
 
-    void setTexture(const sf::Texture& texture);
+    void setTexture(const Texture& texture);
 
     virtual void update(float deltaTime) = 0;
     virtual void draw(RenderWindow& window) const = 0;
