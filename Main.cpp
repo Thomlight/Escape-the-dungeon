@@ -5,6 +5,7 @@
 #include "Chaser.hpp"
 #include "Patroller.hpp"
 #include "Potion.hpp"
+#include "Key.hpp"
 using namespace std;
 using namespace sf;
 
@@ -62,6 +63,11 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
+    Texture KeyTexture;
+    if (!KeyTexture.loadFromFile("Key.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du zombie");
+    }
+
     // Création des sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
@@ -90,6 +96,11 @@ int main() {
     Sprite PotionSprite;
     PotionSprite.setTexture(PotionTexture);
     Potion potion(PotionTexture, Vector2f(1000, 500), &player, true);
+
+    Sprite KeySprite;
+    KeySprite.setTexture(KeyTexture);
+    Key key(KeyTexture, Vector2f(1000,300), &player, true);
+    
 
     // Mise à l'échelle du fond pour couvrir la fenêtre
     //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
@@ -128,6 +139,7 @@ int main() {
         potion.update(DeltaTime);
 
         potion.interact(player);
+        key.interact(player);
         //checkCollisions(player.getSprite(),chaser.getSprite());
         //checkCollisions(player.getSprite(), patroller.getSprite());
         
@@ -136,6 +148,8 @@ int main() {
         chaser.draw(window);
         patroller.draw(window);
         potion.draw(window);
+        key.draw(window);
+
         window.display();
     }
 

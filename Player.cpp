@@ -52,3 +52,7 @@ void Player::speedUp() {
     speed += 5;
     cout << "player speed up" << endl;
 }
+void Player::keyUp() {
+    nbKeys ++;
+    cout << "player go a key" << endl;
+}

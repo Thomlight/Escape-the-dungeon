@@ -1,7 +1,6 @@
 #include "Potion.hpp"
 #include "Player.hpp"
 #include <iostream>
-#include <cmath> // Pour utiliser std::hypot (distance entre deux points)
 
 Potion::Potion(const Texture& texture, const Vector2f& startPosition, Player* playerPtr, bool isActive)
     : Item(texture, startPosition,  playerPtr, isActive) {

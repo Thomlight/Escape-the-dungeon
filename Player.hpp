@@ -24,4 +24,5 @@ public:
     void setVelocity(const Vector2f& newVelocity);
 
     void speedUp();
+    void keyUp();
 };
