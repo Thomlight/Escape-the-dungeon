@@ -1,11 +1,13 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include "Map.hpp"
 #include "Player.hpp"
 #include "Chaser.hpp"
 #include "Patroller.hpp"
 #include "Potion.hpp"
 #include "Key.hpp"
+
 using namespace std;
 using namespace sf;
 
@@ -26,7 +28,7 @@ int main() {
     // Création de la fenêtre
     RenderWindow window(VideoMode(1440, 1000), "Escape the Dungeon");
     Event event;
-   
+
     // Chargement des textures
     Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("Title_Background.png")) {
@@ -68,6 +70,20 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
+    // Chargement des textures des murs et des portes
+    Texture wallTexture;
+    if (!wallTexture.loadFromFile("Wall_Nut.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture des murs");
+    }
+
+    Texture doorTexture;
+    if (!doorTexture.loadFromFile("Door_Zombie.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture des portes");
+    }
+
+    // Création de la carte
+    Map map("Map.txt", "Wall_Nut.png", "Door_Zombie.png");
+
     // Création des sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
@@ -78,19 +94,19 @@ int main() {
 
     Sprite playerSprite;
     playerSprite.setTexture(playerTexture);
-    Player player(playerTexture, Vector2f(300,200), 10.f);
-    player.getSprite().setScale(0.5f, 0.5f);
+    Player player(playerTexture, Vector2f(300, 200), 10.f);
+    player.getSprite().setScale(0.2f, 0.2f);
 
     Sprite ChaserSprite;
     ChaserSprite.setTexture(ChaserTexture);
     Chaser chaser(ChaserTexture, Vector2f(600, 400), 100.f);
     chaser.setTarget(playerSprite.getPosition());
-    chaser.getSprite().setScale(1.0f, 1.0f);
+    chaser.getSprite().setScale(0.4f, 0.4f);
 
     Sprite PatrollerSprite;
     PatrollerSprite.setTexture(PatrollerTexture);
-    vector<sf::Vector2f> path = {{100.f, 100.f},{200.f, 100.f},{200.f, 200.f},{100.f, 200.f}};
-    Patroller patroller(PatrollerTexture, path[0], 100.f, path );
+    vector<sf::Vector2f> path = { {100.f, 100.f},{200.f, 100.f},{200.f, 200.f},{100.f, 200.f} };
+    Patroller patroller(PatrollerTexture, path[0], 100.f, path);
     patroller.getSprite().setScale(0.5f, 0.5f);
 
     Sprite PotionSprite;
@@ -99,17 +115,7 @@ int main() {
 
     Sprite KeySprite;
     KeySprite.setTexture(KeyTexture);
-    Key key(KeyTexture, Vector2f(1000,300), &player, true);
-    
-
-    // Mise à l'échelle du fond pour couvrir la fenêtre
-    //Vector2u textureSize = backgroundTexture.getSize(); // Taille de la texture
-    //Vector2u windowSize = window.getSize();             // Taille de la fenêtre
-
-    //float scaleX = static_cast<float>(windowSize.x) / textureSize.x;
-    //float scaleY = static_cast<float>(windowSize.y) / textureSize.y;
-
-    //backgroundSprite.setScale(scaleX, scaleY); // Ajustement de l'échelle
+    Key key(KeyTexture, Vector2f(1000, 300), &player, true);
 
     // Flag pour changer le fond d'écran
     bool startPressed = false;
@@ -126,24 +132,19 @@ int main() {
         DeltaTime = clock.restart().asSeconds();
         chaser.setTarget(player.getPosition());
         // Affichage
+
         window.clear();
-        //window.draw(backgroundSprite); // Dessin du fond d'écran
-        //if (!startPressed) {
-           // window.draw(startButtonSprite); // Dessin du bouton uniquement si non pressé
-        //}
 
         player.handleInput();
+
         player.update(DeltaTime);
         chaser.update(DeltaTime);
         patroller.updateP(DeltaTime);
-        potion.update(DeltaTime);
 
         potion.interact(player);
         key.interact(player);
-        //checkCollisions(player.getSprite(),chaser.getSprite());
-        //checkCollisions(player.getSprite(), patroller.getSprite());
-        
 
+        map.draw(window); // Draw the map
         player.draw(window);
         chaser.draw(window);
         patroller.draw(window);
