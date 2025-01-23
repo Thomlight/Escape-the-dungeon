@@ -7,14 +7,14 @@
 
 class Map {
 public:
-    // Constructor that loads a map from a file
+    // Constructor that loads a map from a file and textures for walls and doors
     Map(const std::string& filename, const std::string& wallTextureFile, const std::string& doorTextureFile);
 
     // Method to draw the map on the window
     void draw(sf::RenderWindow& window) const;
 
     // Method to check collision with the walls and doors
-    bool checkCollision(const sf::Sprite& sprite) const;
+    bool checkCollision(const sf::FloatRect& bounds) const;
 
 private:
     // Vector to store the tiles of the map

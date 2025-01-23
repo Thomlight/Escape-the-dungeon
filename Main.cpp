@@ -1,4 +1,3 @@
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include "Map.hpp"
@@ -82,7 +81,7 @@ int main() {
     }
 
     // Création de la carte
-    Map map("Map.txt", "Wall_Nut.png", "Door_Zombie.png");
+    Map map("map.txt", "Wall_Nut.png", "Door_Zombie.png");
 
     // Création des sprites
     Sprite backgroundSprite;
@@ -92,15 +91,14 @@ int main() {
     startButtonSprite.setTexture(startButtonTexture);
     startButtonSprite.setPosition(455, 400);
 
-    Sprite playerSprite;
-    playerSprite.setTexture(playerTexture);
-    Player player(playerTexture, Vector2f(300, 200), 10.f);
-    player.getSprite().setScale(0.2f, 0.2f);
+    // Create the player sprite and scale it
+    Player player(playerTexture, Vector2f(200, 400), 10.f);
+    player.getSprite().setScale(sf::Vector2f(0.1f, 0.1f)); // Correct usage of setScale
 
     Sprite ChaserSprite;
     ChaserSprite.setTexture(ChaserTexture);
     Chaser chaser(ChaserTexture, Vector2f(600, 400), 100.f);
-    chaser.setTarget(playerSprite.getPosition());
+    chaser.setTarget(player.getPosition());
     chaser.getSprite().setScale(0.4f, 0.4f);
 
     Sprite PatrollerSprite;
@@ -135,8 +133,7 @@ int main() {
 
         window.clear();
 
-        player.handleInput();
-
+        player.handleInput(map);
         player.update(DeltaTime);
         chaser.update(DeltaTime);
         patroller.updateP(DeltaTime);

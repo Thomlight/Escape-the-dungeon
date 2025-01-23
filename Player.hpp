@@ -1,28 +1,52 @@
-// Player.hpp
-#pragma once
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
+
 #include <SFML/Graphics.hpp>
-#include "Entity.hpp"
+#include "Map.hpp"
 
-using namespace sf;
-
-class Player : public Entity {
-    private:
-    Vector2f position;
-    Vector2f velocity;
-    float speed;
-    int nbKeys = 0; // Ajout d'une variable pour suivre le nombre de clés
+class Player {
 public:
-    Player(const Texture& texture, const Vector2f& startPosition, float initialSpeed);
+    Player(const sf::Texture& texture, const sf::Vector2f& startPosition, float initialSpeed);
 
-    void handleInput();
+    // Method to handle player input
+    void handleInput(const Map& map);
+
+    // Method to update player position and check collisions
     void update(float deltaTime);
-    void draw(RenderWindow& window) const;
 
-    const Vector2f& getPosition();
-    const Vector2f& getVelocity() const;
-    void setPosition(const Vector2f& newPosition);
-    void setVelocity(const Vector2f& newVelocity);
+    // Method to draw the player on the window
+    void draw(sf::RenderWindow& window) const;
 
+    // Getter for the player sprite
+    sf::Sprite& getSprite();
+
+    // Getter for the player position
+    const sf::Vector2f& getPosition();
+
+    // Getter for the player velocity
+    const sf::Vector2f& getVelocity() const;
+
+    // Setter for the player position
+    void setPosition(const sf::Vector2f& newPosition);
+
+    // Setter for the player velocity
+    void setVelocity(const sf::Vector2f& newVelocity);
+
+    // Method to speed up the player
     void speedUp();
+
+    // Method to increase the number of keys the player has
     void keyUp();
+
+private:
+    sf::Sprite sprite;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    float speed;
+    int nbKeys = 0;
+
+    // Method to check collision with the map
+    bool checkCollision(const Map& map, const sf::Vector2f& newPosition) const;
 };
+
+#endif // PLAYER_HPP
