@@ -1,0 +1,7 @@
+movement: z q s d
+
+victoire : w
+ 
+eviter les zombies et attrapez les clées pour vous échapper!
+
+les potion vous font aller plus vite
