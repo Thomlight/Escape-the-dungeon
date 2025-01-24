@@ -42,10 +42,6 @@ sf::Sprite& Player::getSprite() {
     return sprite;
 }
 
-int Player::getKey() {
-    return nbKeys ;
-}
-
 const sf::Vector2f& Player::getPosition() {
     return position;
 }
@@ -65,12 +61,12 @@ void Player::setVelocity(const sf::Vector2f& newVelocity) {
 
 void Player::speedUp() {
     speed += 5;
-    std::cout << "player speed up" << std::endl;
+    std::cout << "Player speed up" << std::endl;
 }
 
 void Player::keyUp() {
     nbKeys++;
-    std::cout << "player got a key" << std::endl;
+    std::cout << "Player got a key" << std::endl;
 }
 
 bool Player::hasKey() const {
@@ -80,11 +76,27 @@ bool Player::hasKey() const {
 void Player::useKey() {
     if (nbKeys > 0) {
         nbKeys--;
-        std::cout << "player used a key" << std::endl;
+        std::cout << "Player used a key" << std::endl;
     }
 }
 
 bool Player::checkCollision(const Map& map, const sf::Vector2f& newPosition) const {
     sf::FloatRect newBounds(newPosition, sprite.getGlobalBounds().getSize());
     return map.checkCollision(newBounds);
+}
+
+void Player::handleDoorInteraction(Map& map) {
+    std::cout << "Checking door interaction..." << std::endl;
+    sf::FloatRect playerBounds = sprite.getGlobalBounds();
+    if (map.checkDoorCollision(playerBounds)) {
+        std::cout << "Player collided with a door." << std::endl;
+        if (hasKey()) {
+            std::cout << "Player has a key." << std::endl;
+            useKey();
+            map.removeDoor(playerBounds);
+            std::cout << "Door opened at (" << playerBounds.left << ", " << playerBounds.top << ")" << std::endl;
+        } else {
+            std::cout << "Player does not have a key." << std::endl;
+        }
+    }
 }

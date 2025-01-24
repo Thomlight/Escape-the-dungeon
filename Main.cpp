@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <time.h>
 #include "Map.hpp"
 #include "Player.hpp"
@@ -23,13 +24,12 @@ void checkCollisions(Sprite sprite1, Sprite sprite2) {
 }
 
 int main() {
-
     Clock clock;
-    // Création de la fenêtre
-    RenderWindow window(VideoMode(1440, 1000), "Escape the Dungeon");
+    // Create the window
+    RenderWindow window(VideoMode(1410, 1000), "Escape the Garden");
     Event event;
 
-    // Chargement des textures
+    // Load textures
     Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("Title_Background.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture du fond d'écran !");
@@ -42,6 +42,11 @@ int main() {
 
     Texture startButtonTexture;
     if (!startButtonTexture.loadFromFile("Start_Button.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du bouton !");
+    }
+
+    Texture exitButtonTexture;
+    if (!exitButtonTexture.loadFromFile("Exit_Button.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture du bouton !");
     }
 
@@ -70,7 +75,7 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du zombie");
     }
 
-    // Chargement des textures des murs et des portes
+    // Load wall and door textures
     Texture wallTexture;
     if (!wallTexture.loadFromFile("Wall_Nut.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture des murs");
@@ -81,16 +86,32 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture des portes");
     }
 
-    // Création de la carte
-    Map map("map.txt", "Wall_Nut.png", "Door_Zombie.png");
+    Texture grassTexture;
+    if (!grassTexture.loadFromFile("Grass.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture de l'herbe");
+    }
 
-    // Création des sprites
+    // Create the map
+    Map map("map.txt", "Wall_Nut.png", "Door_Zombie.png", "Grass.png");
+
+    // Create sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
+
+    // Scale the background sprite to fill the screen
+    FloatRect backgroundBounds = backgroundSprite.getLocalBounds();
+    backgroundSprite.setScale(
+        window.getSize().x / backgroundBounds.width,
+        window.getSize().y / backgroundBounds.height
+    );
 
     Sprite startButtonSprite;
     startButtonSprite.setTexture(startButtonTexture);
     startButtonSprite.setPosition(455, 400);
+
+    Sprite exitButtonSprite;
+    exitButtonSprite.setTexture(exitButtonTexture);
+    exitButtonSprite.setPosition(455, 600);
 
     // Create the player sprite and scale it
     Player player(playerTexture, Vector2f(300, 400), 10.f);
@@ -106,7 +127,7 @@ int main() {
     PatrollerSprite.setTexture(PatrollerTexture);
     vector<sf::Vector2f> path = { {100.f, 100.f},{200.f, 100.f},{200.f, 200.f},{100.f, 200.f} };
     Patroller patroller(PatrollerTexture, path[0], 100.f, path);
-    patroller.getSprite().setScale(0.5f, 0.5f);
+    patroller.getSprite().setScale(0.3f, 0.3f);
 
     Sprite PotionSprite;
     PotionSprite.setTexture(PotionTexture);
@@ -116,50 +137,55 @@ int main() {
     KeySprite.setTexture(KeyTexture);
     Key key(KeyTexture, Vector2f(1000, 300), &player, true);
 
-    // Flag pour changer le fond d'écran
-    bool startPressed = false;
+    // Flag to check if the game has started
+    bool gameStarted = false;
 
-    // Boucle principale
+    // Main loop
     while (window.isOpen()) {
-        // Gestion des événements
+        // Handle events
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed) {
                 window.close();
             }
-        }
-        window.setFramerateLimit(60);
-        DeltaTime = clock.restart().asSeconds();
-        chaser.setTarget(player.getPosition());
-        // Affichage
-
-        window.clear();
-
-        player.handleInput(map);
-        player.update(DeltaTime);
-        chaser.update(DeltaTime);
-        patroller.updateP(DeltaTime);
-
-        potion.interact(player);
-        key.interact(player);
-
-        // Check for collisions with doors and remove them if the player has a key
-        if (player.hasKey()) {
-            sf::FloatRect playerBounds = player.getSprite().getGlobalBounds();
-            if (map.checkCollision(playerBounds)) {
-                std::cout << "Player collided with a door." << std::endl;
-                map.removeDoor(playerBounds);
-                player.useKey();
+            if (event.type == Event::MouseButtonPressed) {
+                Vector2i mousePos = Mouse::getPosition(window);
+                if (startButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    gameStarted = true;
+                }
+                if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    window.close();
+                }
             }
         }
 
-        map.draw(window); // Draw the map
-        player.draw(window);
-        chaser.draw(window);
-        patroller.draw(window);
-        potion.draw(window);
-        key.draw(window);
+        window.clear();
 
-        cout << player.getKey() << endl;
+        // Check if the game has started
+        if (!gameStarted) {
+            window.draw(backgroundSprite);
+            window.draw(startButtonSprite);
+            window.draw(exitButtonSprite);
+        }
+        else {
+            window.setFramerateLimit(60);
+            DeltaTime = clock.restart().asSeconds();
+            chaser.setTarget(player.getPosition());
+
+            player.handleInput(map);
+            player.update(DeltaTime);
+            chaser.update(DeltaTime);
+            patroller.updateP(DeltaTime);
+
+            potion.interact(player);
+            key.interact(player);
+
+            map.draw(window); // Draw the map
+            player.draw(window);
+            chaser.draw(window);
+            patroller.draw(window);
+            potion.draw(window);
+            key.draw(window);
+        }
 
         window.display();
     }

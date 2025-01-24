@@ -2,6 +2,7 @@
 #define KEY_H
 
 #include "Item.hpp"
+#include "Player.hpp"
 
 class Key : public Item {
 public:

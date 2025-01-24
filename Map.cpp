@@ -2,8 +2,8 @@
 #include <fstream>
 #include <iostream>
 
-// Constructor that loads a map from a file and textures for walls and doors
-Map::Map(const std::string& filename, const std::string& wallTextureFile, const std::string& doorTextureFile) {
+// Constructor that loads a map from a file and textures for walls, doors, and tiles
+Map::Map(const std::string& filename, const std::string& wallTextureFile, const std::string& doorTextureFile, const std::string& tileTextureFile) {
     if (!wallTexture.loadFromFile(wallTextureFile)) {
         std::cerr << "Failed to load wall texture from file." << std::endl;
     }
@@ -16,6 +16,13 @@ Map::Map(const std::string& filename, const std::string& wallTextureFile, const 
     }
     else {
         std::cout << "Door texture loaded successfully." << std::endl;
+    }
+
+    if (!tileTexture.loadFromFile(tileTextureFile)) {
+        std::cerr << "Failed to load tile texture from file." << std::endl;
+    }
+    else {
+        std::cout << "Tile texture loaded successfully." << std::endl;
     }
 
     if (!loadMapFromFile(filename)) {
@@ -37,11 +44,19 @@ void Map::draw(sf::RenderWindow& window) const {
 bool Map::checkCollision(const sf::FloatRect& bounds) const {
     for (const auto& tile : tiles) {
         if (tile.getGlobalBounds().intersects(bounds)) {
+            std::cout << "collide"; 
             return true;
         }
     }
+    return false;
+}
+
+// Method to check collision specifically with doors
+bool Map::checkDoorCollision(const sf::FloatRect& bounds) const {
+    std::cout << "Checking door collisions..." << std::endl; // Debug statement
     for (const auto& doorTile : doorTiles) {
         if (doorTile.getGlobalBounds().intersects(bounds)) {
+            std::cout << "Collision with door at (" << doorTile.getPosition().x << ", " << doorTile.getPosition().y << ")" << std::endl; // Debug statement
             return true;
         }
     }
@@ -52,11 +67,17 @@ bool Map::checkCollision(const sf::FloatRect& bounds) const {
 void Map::removeDoor(const sf::FloatRect& bounds) {
     for (auto it = doorTiles.begin(); it != doorTiles.end(); ++it) {
         if (it->getGlobalBounds().intersects(bounds)) {
+            std::cout << "Door removed at (" << it->getPosition().x << ", " << it->getPosition().y << ")" << std::endl;
             doorTiles.erase(it);
-            std::cout << "Door removed" << std::endl;
             break;
         }
     }
+    // Also remove from the main tiles vector
+    tiles.erase(std::remove_if(tiles.begin(), tiles.end(),
+        [&bounds](const sf::RectangleShape& tile) {
+            return tile.getGlobalBounds().intersects(bounds);
+        }),
+        tiles.end());
 }
 
 // Method to load the map from a file
@@ -81,16 +102,18 @@ bool Map::loadMapFromFile(const std::string& filename) {
             if (line[x] == 'W') {
                 tile.setTexture(&wallTexture); // Apply the wall texture to the tile
                 tiles.push_back(tile);
-                std::cout << "Wall tile added at (" << x << ", " << y << ")." << std::endl;
+                std::cout << "Wall tile added at (" << x * 64 << ", " << y * 64 << ")." << std::endl;
             }
             else if (line[x] == 'D') {
                 tile.setTexture(&doorTexture); // Apply the door texture to the tile
                 doorTiles.push_back(tile);
                 tiles.push_back(tile); // Add to main tiles as well for drawing
-                std::cout << "Door tile added at (" << x << ", " << y << ")." << std::endl;
+                std::cout << "Door tile added at (" << x * 64 << ", " << y * 64 << ")." << std::endl;
             }
-            else if (line[x] == 'V') {
-                std::cout << "Empty tile at (" << x << ", " << y << ")." << std::endl;
+            else if (line[x] == '#') {
+                tile.setTexture(&tileTexture); // Apply the tile texture to the tile
+                tiles.push_back(tile); // Add empty tile to the vector
+                std::cout << "Empty tile added at (" << x * 64 << ", " << y * 64 << ")." << std::endl;
             }
         }
         ++y;
