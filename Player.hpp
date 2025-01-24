@@ -18,6 +18,7 @@ public:
     const sf::Vector2f& getVelocity() const;
     void setPosition(const sf::Vector2f& newPosition);
     void setVelocity(const sf::Vector2f& newVelocity);
+	void setSpeed(float newSpeed);  
     void speedUp();
     void keyUp();
     bool hasKey() const;

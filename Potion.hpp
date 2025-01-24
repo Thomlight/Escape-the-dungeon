@@ -10,6 +10,7 @@ public:
 
     void update(float DeltaTime) override;
     void interact(Player& player) override;
+	void setActive();   
 };
 
 #endif // POTION_H

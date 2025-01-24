@@ -11,6 +11,7 @@ public:
 
     void update(float DeltaTime) override;
     void interact(Player& player) override;
+	void setIsActive(); 
 };
 
 #endif // Key_H

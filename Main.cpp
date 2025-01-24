@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <time.h>
+#include <sstream>
 #include "Map.hpp"
 #include "Player.hpp"
 #include "Chaser.hpp"
@@ -13,14 +14,34 @@ using namespace std;
 using namespace sf;
 
 float DeltaTime;
+bool gameLost = false;
+Clock gameClock;
+Time gameTime;
 
 void checkCollisions(Sprite sprite1, Sprite sprite2) {
     FloatRect bounds1 = sprite1.getGlobalBounds();
     FloatRect bounds2 = sprite2.getGlobalBounds();
     if (bounds1.intersects(bounds2)) {
-        cout << "Collision detected!" << endl;
-        cout << "not gud !" << endl;
+        cout << "Collision detected! Game Over!" << endl;
+        gameLost = true;
+        gameTime = gameClock.getElapsedTime();
     }
+}
+
+void Start(Player& player, Chaser& chaser, Patroller& patroller, Potion& potion, Key& key, Clock& clock) {
+    // Set initial positions for player, enemies, and items
+    player.setPosition(Vector2f(300, 400));
+    player.setSpeed(5.f);
+    chaser.setPosition(Vector2f(600, 400));
+    patroller.setPosition(Vector2f(100, 100));
+    potion.setPosition(Vector2f(1000, 500));
+    potion.setActive();
+    key.setPosition(Vector2f(1000, 300));
+    key.setIsActive();
+
+    // Reset the clocks for DeltaTime and game time
+    clock.restart();
+    gameClock.restart();
 }
 
 int main() {
@@ -35,9 +56,9 @@ int main() {
         throw runtime_error("Erreur : Impossible de charger la texture du fond d'écran !");
     }
 
-    Texture newBackgroundTexture;
-    if (!newBackgroundTexture.loadFromFile("Normal_Background.png")) {
-        throw runtime_error("Erreur : Impossible de charger la texture du nouveau fond d'écran !");
+    Texture lostBackgroundTexture;
+    if (!lostBackgroundTexture.loadFromFile("Lost_Background.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du fond perdu !");
     }
 
     Texture startButtonTexture;
@@ -97,12 +118,16 @@ int main() {
     // Create sprites
     Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
-
-    // Scale the background sprite to fill the screen
-    FloatRect backgroundBounds = backgroundSprite.getLocalBounds();
     backgroundSprite.setScale(
-        window.getSize().x / backgroundBounds.width,
-        window.getSize().y / backgroundBounds.height
+        window.getSize().x / backgroundSprite.getLocalBounds().width,
+        window.getSize().y / backgroundSprite.getLocalBounds().height
+    );
+
+    Sprite lostBackgroundSprite;
+    lostBackgroundSprite.setTexture(lostBackgroundTexture);
+    lostBackgroundSprite.setScale(
+        window.getSize().x / lostBackgroundSprite.getLocalBounds().width,
+        window.getSize().y / lostBackgroundSprite.getLocalBounds().height
     );
 
     Sprite startButtonSprite;
@@ -114,14 +139,14 @@ int main() {
     exitButtonSprite.setPosition(455, 600);
 
     // Create the player sprite and scale it
-    Player player(playerTexture, Vector2f(300, 400), 10.f);
+    Player player(playerTexture, Vector2f(300, 400), 5.f);
     player.getSprite().setScale(sf::Vector2f(0.1f, 0.1f)); // Correct usage of setScale
 
     Sprite ChaserSprite;
     ChaserSprite.setTexture(ChaserTexture);
     Chaser chaser(ChaserTexture, Vector2f(600, 400), 100.f);
     chaser.setTarget(player.getPosition());
-    chaser.getSprite().setScale(0.4f, 0.4f);
+    chaser.getSprite().setScale(0.2f, 0.2f);
 
     Sprite PatrollerSprite;
     PatrollerSprite.setTexture(PatrollerTexture);
@@ -137,6 +162,18 @@ int main() {
     KeySprite.setTexture(KeyTexture);
     Key key(KeyTexture, Vector2f(1000, 300), &player, true);
 
+    // Create the font and text for displaying the elapsed time
+    Font font;
+    if (!font.loadFromFile("comicneuesansid.ttf")) {
+        throw runtime_error("Erreur : Impossible de charger la police !");
+    }
+
+    Text elapsedTimeText;
+    elapsedTimeText.setFont(font);
+    elapsedTimeText.setCharacterSize(30);
+    elapsedTimeText.setFillColor(Color::Black); // Set text color to black
+    elapsedTimeText.setPosition(600, 300);
+
     // Flag to check if the game has started
     bool gameStarted = false;
 
@@ -149,22 +186,37 @@ int main() {
             }
             if (event.type == Event::MouseButtonPressed) {
                 Vector2i mousePos = Mouse::getPosition(window);
-                if (startButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                    gameStarted = true;
-                }
-                if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                    window.close();
+                if (!gameStarted || gameLost) {
+                    if (startButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                        gameStarted = true;
+                        gameLost = false;
+                        Start(player, chaser, patroller, potion, key, clock);  // Initialize game objects
+                    }
+                    if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                        window.close();
+                    }
                 }
             }
         }
 
         window.clear();
 
-        // Check if the game has started
+        // Check if the game has started and not lost
         if (!gameStarted) {
             window.draw(backgroundSprite);
             window.draw(startButtonSprite);
             window.draw(exitButtonSprite);
+        }
+        else if (gameLost) {
+            window.draw(lostBackgroundSprite);
+            window.draw(startButtonSprite);
+            window.draw(exitButtonSprite);
+
+            // Display elapsed time
+            stringstream ss;
+            ss << "Temps de jeu: " << gameTime.asSeconds() << " seconds";
+            elapsedTimeText.setString(ss.str());
+            window.draw(elapsedTimeText);
         }
         else {
             window.setFramerateLimit(60);
@@ -175,6 +227,10 @@ int main() {
             player.update(DeltaTime);
             chaser.update(DeltaTime);
             patroller.updateP(DeltaTime);
+
+            // Check for collisions
+            checkCollisions(player.getSprite(), chaser.getSprite());
+            checkCollisions(player.getSprite(), patroller.getSprite());
 
             potion.interact(player);
             key.interact(player);

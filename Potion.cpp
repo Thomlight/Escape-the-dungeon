@@ -19,3 +19,7 @@ void Potion::interact(Player& player) {
         isActive = false;
     }
 }
+
+void Potion::setActive() {
+	isActive = true;
+}   

@@ -44,7 +44,7 @@ void Map::draw(sf::RenderWindow& window) const {
 bool Map::checkCollision(const sf::FloatRect& bounds) const {
     for (const auto& tile : tiles) {
         if (tile.getGlobalBounds().intersects(bounds)) {
-            std::cout << "collide"; 
+            std::cout << "collide"<< std::endl; 
             return true;
         }
     }

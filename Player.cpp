@@ -60,7 +60,7 @@ void Player::setVelocity(const sf::Vector2f& newVelocity) {
 }
 
 void Player::speedUp() {
-    speed += 5;
+    speed += 2;
     std::cout << "Player speed up" << std::endl;
 }
 
@@ -100,3 +100,7 @@ void Player::handleDoorInteraction(Map& map) {
         }
     }
 }
+
+void Player::setSpeed(float newSpeed) {
+	speed = newSpeed;
+}   

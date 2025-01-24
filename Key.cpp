@@ -19,3 +19,7 @@ void Key::interact(Player& player) {
         isActive = false;
     }
 }
+
+void Key::setIsActive() {
+	isActive = true;
+}   
