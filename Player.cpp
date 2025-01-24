@@ -38,8 +38,12 @@ void Player::draw(sf::RenderWindow& window) const {
     window.draw(sprite);
 }
 
-sf::Sprite& Player::getSprite()  {
+sf::Sprite& Player::getSprite() {
     return sprite;
+}
+
+int Player::getKey() {
+    return nbKeys ;
 }
 
 const sf::Vector2f& Player::getPosition() {
@@ -67,6 +71,17 @@ void Player::speedUp() {
 void Player::keyUp() {
     nbKeys++;
     std::cout << "player got a key" << std::endl;
+}
+
+bool Player::hasKey() const {
+    return nbKeys > 0;
+}
+
+void Player::useKey() {
+    if (nbKeys > 0) {
+        nbKeys--;
+        std::cout << "player used a key" << std::endl;
+    }
 }
 
 bool Player::checkCollision(const Map& map, const sf::Vector2f& newPosition) const {

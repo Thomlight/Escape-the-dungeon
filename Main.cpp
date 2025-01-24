@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include "Map.hpp"
@@ -92,7 +93,7 @@ int main() {
     startButtonSprite.setPosition(455, 400);
 
     // Create the player sprite and scale it
-    Player player(playerTexture, Vector2f(200, 400), 10.f);
+    Player player(playerTexture, Vector2f(300, 400), 10.f);
     player.getSprite().setScale(sf::Vector2f(0.1f, 0.1f)); // Correct usage of setScale
 
     Sprite ChaserSprite;
@@ -141,12 +142,24 @@ int main() {
         potion.interact(player);
         key.interact(player);
 
+        // Check for collisions with doors and remove them if the player has a key
+        if (player.hasKey()) {
+            sf::FloatRect playerBounds = player.getSprite().getGlobalBounds();
+            if (map.checkCollision(playerBounds)) {
+                std::cout << "Player collided with a door." << std::endl;
+                map.removeDoor(playerBounds);
+                player.useKey();
+            }
+        }
+
         map.draw(window); // Draw the map
         player.draw(window);
         chaser.draw(window);
         patroller.draw(window);
         potion.draw(window);
         key.draw(window);
+
+        cout << player.getKey() << endl;
 
         window.display();
     }

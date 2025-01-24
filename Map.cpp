@@ -40,7 +40,23 @@ bool Map::checkCollision(const sf::FloatRect& bounds) const {
             return true;
         }
     }
+    for (const auto& doorTile : doorTiles) {
+        if (doorTile.getGlobalBounds().intersects(bounds)) {
+            return true;
+        }
+    }
     return false;
+}
+
+// Method to remove a door tile
+void Map::removeDoor(const sf::FloatRect& bounds) {
+    for (auto it = doorTiles.begin(); it != doorTiles.end(); ++it) {
+        if (it->getGlobalBounds().intersects(bounds)) {
+            doorTiles.erase(it);
+            std::cout << "Door removed" << std::endl;
+            break;
+        }
+    }
 }
 
 // Method to load the map from a file
@@ -69,10 +85,11 @@ bool Map::loadMapFromFile(const std::string& filename) {
             }
             else if (line[x] == 'D') {
                 tile.setTexture(&doorTexture); // Apply the door texture to the tile
-                tiles.push_back(tile);
+                doorTiles.push_back(tile);
+                tiles.push_back(tile); // Add to main tiles as well for drawing
                 std::cout << "Door tile added at (" << x << ", " << y << ")." << std::endl;
             }
-            else if (line[x] == '#') {
+            else if (line[x] == 'V') {
                 std::cout << "Empty tile at (" << x << ", " << y << ")." << std::endl;
             }
         }

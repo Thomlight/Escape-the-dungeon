@@ -26,6 +26,8 @@ public:
     // Getter for the player velocity
     const sf::Vector2f& getVelocity() const;
 
+    int getKey();
+
     // Setter for the player position
     void setPosition(const sf::Vector2f& newPosition);
 
@@ -37,6 +39,12 @@ public:
 
     // Method to increase the number of keys the player has
     void keyUp();
+
+    // Check if the player has a key
+    bool hasKey() const;
+
+    // Consume a key
+    void useKey();
 
 private:
     sf::Sprite sprite;
