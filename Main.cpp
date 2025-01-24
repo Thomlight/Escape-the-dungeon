@@ -15,6 +15,7 @@ using namespace sf;
 
 float DeltaTime;
 bool gameLost = false;
+bool gameWon = false;
 Clock gameClock;
 Time gameTime;
 
@@ -42,6 +43,8 @@ void Start(Player& player, Chaser& chaser, Patroller& patroller, Potion& potion,
     // Reset the clocks for DeltaTime and game time
     clock.restart();
     gameClock.restart();
+    gameLost = false;
+    gameWon = false;
 }
 
 int main() {
@@ -59,6 +62,11 @@ int main() {
     Texture lostBackgroundTexture;
     if (!lostBackgroundTexture.loadFromFile("Lost_Background.png")) {
         throw runtime_error("Erreur : Impossible de charger la texture du fond perdu !");
+    }
+
+    Texture victoryBackgroundTexture;
+    if (!victoryBackgroundTexture.loadFromFile("Victory_screen.png")) {
+        throw runtime_error("Erreur : Impossible de charger la texture du fond de victoire !");
     }
 
     Texture startButtonTexture;
@@ -130,6 +138,13 @@ int main() {
         window.getSize().y / lostBackgroundSprite.getLocalBounds().height
     );
 
+    Sprite victoryBackgroundSprite;
+    victoryBackgroundSprite.setTexture(victoryBackgroundTexture);
+    victoryBackgroundSprite.setScale(
+        window.getSize().x / victoryBackgroundSprite.getLocalBounds().width,
+        window.getSize().y / victoryBackgroundSprite.getLocalBounds().height
+    );
+
     Sprite startButtonSprite;
     startButtonSprite.setTexture(startButtonTexture);
     startButtonSprite.setPosition(455, 400);
@@ -186,10 +201,11 @@ int main() {
             }
             if (event.type == Event::MouseButtonPressed) {
                 Vector2i mousePos = Mouse::getPosition(window);
-                if (!gameStarted || gameLost) {
+                if (!gameStarted || gameLost || gameWon) {
                     if (startButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         gameStarted = true;
                         gameLost = false;
+                        gameWon = false;
                         Start(player, chaser, patroller, potion, key, clock);  // Initialize game objects
                     }
                     if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
@@ -197,11 +213,15 @@ int main() {
                     }
                 }
             }
+            if (event.type == Event::KeyPressed && event.key.code == Keyboard::W && gameStarted && !gameLost) {
+                gameWon = true;
+                gameTime = gameClock.getElapsedTime();
+            }
         }
 
         window.clear();
 
-        // Check if the game has started and not lost
+        // Check if the game has started and not lost or won
         if (!gameStarted) {
             window.draw(backgroundSprite);
             window.draw(startButtonSprite);
@@ -209,6 +229,17 @@ int main() {
         }
         else if (gameLost) {
             window.draw(lostBackgroundSprite);
+            window.draw(startButtonSprite);
+            window.draw(exitButtonSprite);
+
+            // Display elapsed time
+            stringstream ss;
+            ss << "Temps de jeu: " << gameTime.asSeconds() << " seconds";
+            elapsedTimeText.setString(ss.str());
+            window.draw(elapsedTimeText);
+        }
+        else if (gameWon) {
+            window.draw(victoryBackgroundSprite);
             window.draw(startButtonSprite);
             window.draw(exitButtonSprite);
 
@@ -234,6 +265,12 @@ int main() {
 
             potion.interact(player);
             key.interact(player);
+
+            // Check if game time exceeds 20 seconds
+            if (gameClock.getElapsedTime().asSeconds() > 20) {
+                gameLost = true;
+                gameTime = gameClock.getElapsedTime();
+            }
 
             map.draw(window); // Draw the map
             player.draw(window);
